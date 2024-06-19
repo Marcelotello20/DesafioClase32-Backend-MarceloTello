@@ -6,7 +6,7 @@ import ProductController from '../controllers/productController.js';
 import productModel from '../dao/mongo/models/productModel.js';
 import CartController from '../controllers/cartController.js';
 
-import {auth, logged} from '../middlewares/auth.js'
+import {auth, logged, isAdmin, isUser} from '../middlewares/auth.js'
 
 const router = express.Router();
 
@@ -83,25 +83,25 @@ router.get('/realtimeproducts', async (req, res) => {
     }
 });
 
-router.get('/addproduct', auth, (req, res) => {
+router.get('/addproduct', isAdmin, (req, res) => {
     res.render('addproduct', {
         style: 'index.css'
     });
 });
 
-router.get('/deleteproduct', auth, async (req, res) => {
+router.get('/deleteproduct', isAdmin, async (req, res) => {
     res.render('deleteproduct', {
         style: 'index.css'
     });
 });
 
-router.get('/chat', auth, async (req,res) => {
+router.get('/chat', isUser, async (req,res) => {
     res.render('chat', {
         style: 'chat.css'
     });
 })
 
-router.get('/cart/:cid', auth, async (req,res) => {
+router.get('/cart/:cid', isUser, async (req,res) => {
     let cartId = req.params.cid;
 
     try{

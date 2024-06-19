@@ -1,5 +1,8 @@
 import {Router} from 'express';
 import passport from 'passport';
+import UserDTO from '../dao/DTOs/user.dto';
+import auth from '../middlewares/auth';
+
 
 const router = Router();
 const usersRouter = router;
@@ -26,6 +29,9 @@ router.get('/githubcallback',passport.authenticate('github',{failureRedirect: '/
     res.redirect('/');
 })
 
-router.get("/current", )
+router.get('/current', auth, (req, res) => {
+    const userDTO = new UserDTO(req.user);
+    res.json(userDTO);
+  });
 
 export default usersRouter;

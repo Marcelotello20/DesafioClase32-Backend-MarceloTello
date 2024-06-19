@@ -1,4 +1,4 @@
-import ContactDTO from "../dao/DTOs/contact.dto.js";
+import ContactDTO from "../dao/DTOs/user.dto.js";
 
 export default class MessageRepository {
     constructor (dao) {

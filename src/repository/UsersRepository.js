@@ -1,4 +1,4 @@
-import ContactDTO from "../dao/DTOs/contact.dto.js";
+import UserDTO from "../dao/DTOs/user.dto.js";
 
 export default class UserRepository {
     constructor (dao) {
@@ -13,9 +13,9 @@ export default class UserRepository {
         return await this.dao.getById(uid);
     }
 
-    async createContact(contact) {
-        const newContact = new ContactDTO(contact);
-        return await this.dao.create(newContact);
+    async createUser(user) {
+        const newUser = new UserDTO(user);
+        return await this.dao.create(newUser);
     }
 }
 
