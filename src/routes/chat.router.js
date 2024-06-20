@@ -1,6 +1,7 @@
 import express from "express";
 
 import MessageController from "../controllers/messageController.js";
+import { isUser, auth } from '../middlewares/auth.js';
 
 const router = express.Router();
 const chatRouter = router;
@@ -9,7 +10,7 @@ const MC = new MessageController();
 
 router.get("/messages", async (req, res) => {
     try {
-        const messages = await MC.getAllMessages();
+        const messages = await MC.getAll();
         res.status(200).json(messages);
     } catch (error) {
         console.error("Error al obtener los mensajes:", error);
@@ -17,7 +18,7 @@ router.get("/messages", async (req, res) => {
     }
 });
 
-router.post("/message", async (req, res) => {
+router.post("/message", auth, isUser, async (req, res) => {
     const { user, message } = req.body;
 
     if (!user || !message) {
@@ -25,11 +26,9 @@ router.post("/message", async (req, res) => {
     }
 
     try {
-        // Aquí deberías guardar el mensaje en MongoDB
-        const newMessage = await MC.addMessage(user, message);
+        const newMessage = await MC.add(user, message);
         
-        // Emitir el mensaje a todos los clientes
-        io.emit("messageLogs", await MC.getAllMessages());
+        io.emit("messageLogs", await MC.getAll());
 
         res.status(201).json(newMessage);
     } catch (error) {

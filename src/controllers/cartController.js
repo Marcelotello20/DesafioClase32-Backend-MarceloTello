@@ -6,44 +6,47 @@ export default class CartController {
         this.cartService = new CartsService();
     }
 
-    async createCart() {
-        return await this.cartService.create();
+    async create() {
+        return await this.cartService.createCart();
     }
 
-    async addProductToCart(cartId, productId, quantity) {
-        return await this.cartService.addProduct(cartId, productId, quantity);
+    async addProduct(cartId, productId, quantity) {
+        return await this.cartService.addProductToCart(cartId, productId, quantity);
     }
 
-    async getCarts() {
-        return await this.cartService.getAll();
+    async getAll() {
+        return await this.cartService.getCarts();
     }
 
-    async getCartById(cartId) {
-        return await this.cartService.getById(cartId);
+    async getById(cartId) {
+        return await this.cartService.getCartById(cartId);
     }
 
-    async deleteCart(cartId) {
-        return await this.cartService.delete(cartId);
+    async removeAllProducts(cartId) {
+        return await this.cartService.removeAllProductsToCart(cartId);
     }
 
-    async removeAllProductsFromCart(cartId) {
-        return await this.cartService.removeAllProducts(cartId);
+    async removeProduct(cartId, productId) {
+        return await this.cartService.removeProductToCart(cartId, productId);
     }
 
-    async removeProductFromCart(cartId, productId) {
-        return await this.cartService.removeProduct(cartId, productId);
-    }
-
-    async updateProductQuantity(cartId, productId, quantity) {
-        return await this.cartService.updateQuantity(cartId, productId, quantity);
-    }
-
-    
-    async updateCart(cartId,productsData) {
+    async update(cartId,productsData) {
         if (!productId || !productsData ) {
             throw new Error('Error al actualizar el carrito, falta información');
         }
-        return await this.cartService.update(cartId,productsData);
+        return await this.cartService.updateCart(cartId,productsData);
+    }
+
+    async updateQuantity(cartId, productId, quantity) {
+        return await this.cartService.updateProductQuantity(cartId, productId, quantity);
+    }
+
+    async purchase(cartId, userEmail) {
+        return await this.cartService.purchaseCart(cartId, userEmail);
+    }
+
+    async delete(cartId) {
+        return await this.cartService.deleteCart(cartId);
     }
 
 }

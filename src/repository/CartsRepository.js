@@ -15,7 +15,7 @@ export default class CartRepository {
         return await this.dao.getAll();
     }
 
-    async getCartByID(cartId) {
+    async getCartById(cartId) {
         return await this.dao.getById(cartId);
     }
 
@@ -37,6 +37,10 @@ export default class CartRepository {
 
     async deleteCart(cartId) {
         return await this.dao.delete(cartId);
+    }
+
+    async purchaseCart(cartId, userEmail) {
+        return await this.dao.purchase(cartId, userEmail);
     }
 }
 

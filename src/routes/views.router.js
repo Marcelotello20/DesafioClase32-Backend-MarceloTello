@@ -1,7 +1,6 @@
 import express from 'express';
 import __dirname from '../utils/utils.js';
 
-// import ProductManagerFS from '../dao/ProductManagerFS.js';
 import ProductController from '../controllers/productController.js';
 import productModel from '../dao/mongo/models/productModel.js';
 import CartController from '../controllers/cartController.js';
@@ -70,9 +69,9 @@ router.get("/profile", auth, (req, res) => {
     }
 }); 
 
-router.get('/realtimeproducts', async (req, res) => {
+router.get('/realtimeproducts', auth, isAdmin, async (req, res) => {
     try {
-        const products = await PC.getProducts();
+        const products = await PC.getAll();
         res.render('realtimeproducts', {
             products,
             style: 'index.css'
@@ -83,29 +82,29 @@ router.get('/realtimeproducts', async (req, res) => {
     }
 });
 
-router.get('/addproduct', isAdmin, (req, res) => {
+router.get('/addproduct', auth, isAdmin, (req, res) => {
     res.render('addproduct', {
         style: 'index.css'
     });
 });
 
-router.get('/deleteproduct', isAdmin, async (req, res) => {
+router.get('/deleteproduct', auth, isAdmin, async (req, res) => {
     res.render('deleteproduct', {
         style: 'index.css'
     });
 });
 
-router.get('/chat', isUser, async (req,res) => {
+router.get('/chat', async (req,res) => {
     res.render('chat', {
         style: 'chat.css'
     });
 })
 
-router.get('/cart/:cid', isUser, async (req,res) => {
+router.get('/cart/:cid', auth, isUser, async (req,res) => {
     let cartId = req.params.cid;
 
     try{
-        let cart = await CC.getCartById(cartId)
+        let cart = await CC.getById(cartId)
         res.render('cart', {
             cart,
             style: '../../css/index.css'

@@ -2,6 +2,7 @@
 import __dirname from '../utils/utils.js';
 import ProductController from '../controllers/productController.js';
 import productModel from '../dao/mongo/models/productModel.js';
+import { auth, isAdmin } from '../middlewares/auth.js';
 
 const router = express.Router();
 const productsRouter = router;
@@ -38,13 +39,10 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    //FS
-    // const productId = +req.params.id;
-    //DB
     const productId = req.params.id;
 
     try{
-        let product = await PC.getProductById(productId);
+        let product = await PC.getAll(productId);
 
         if (!product) {
             console.error("No se encontró el producto solicitado");
@@ -63,12 +61,12 @@ router.get('/:id', async (req, res) => {
     
 });
 
-router.post('/', async (req, res) => {
+router.post('/',auth, isAdmin, async (req, res) => {
 
     const product = req.body;
 
     try {
-        await PC.addProduct(product);
+        await PC.add(product);
         res.status(201).send('Producto creado correctamente');
     } catch (error) {
         console.error("Error al crear el producto");
@@ -76,17 +74,13 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
-    //FS
-    // const productId = +req.params.id;
-
-    //DB
+router.put('/:id', auth, isAdmin, async (req, res) => {
     const productId = req.params.id;
 
     const update = req.body;
 
     try {
-        await PC.updateProduct(productId, update);
+        await PC.update(productId, update);
         res.send('Producto actualizado correctamente');
     } catch (error) {
         console.error("Error al actualizar el producto");
@@ -94,14 +88,11 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
-    //FS
-    // const productId = +req.params.id;
-    //DB
+router.delete('/:id', auth, isAdmin, async (req, res) => {
     const productId = req.params.id;
     
     try {
-        await PC.deleteProduct(productId);
+        await PC.delete(productId);
         res.send('Producto eliminado correctamente');
     } catch (error) {
         console.error("Error al eliminar el producto:");
@@ -109,16 +100,11 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-// Endpoint para eliminar un producto por su id combinandolo con un form en HTML y en views.router( DELETE NO EXISTE EN HTML )
-router.post('/deleteproduct', async (req, res) => {
-    //FS
-    // const productId = +req.body.productId;
-    
-    //DB
+router.post('/deleteproduct', auth, isAdmin, async (req, res) => {
     const productId = req.body.productId;
 
     try {
-        await PC.deleteProduct(productId);
+        await PC.delete(productId);
         res.send('Producto eliminado correctamente');
     } catch (error) {
         console.error("Error al eliminar el producto:");

@@ -6,12 +6,12 @@ export default class MessageController {
         this.messageService = new MessagesService();
     }
 
-    async addMessage(user, message) {
-        return await this.messageService.add(user, message);
+    async add(user, message) {
+        return await this.messageService.addMessage(user, message);
     }
 
-    async getAllMessages() {
-        return await this.messageService.getAll();
+    async getAll() {
+        return await this.messageService.getMessages();
     }
     
 }

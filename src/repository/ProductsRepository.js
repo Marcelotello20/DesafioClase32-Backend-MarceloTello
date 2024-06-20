@@ -11,7 +11,7 @@ export default class ProductRepository {
         return await this.dao.getById(productId);
     }
 
-    async createProduct(product) {
+    async addProduct(product) {
         return await this.dao.add(product);
     }
 

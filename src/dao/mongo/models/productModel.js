@@ -43,9 +43,10 @@ const productSchema = mongoose.Schema({
     required: false,
     default:true
   }
+
 });
 
-//Paginate
+
 productSchema.plugin(mongoosePaginate);
 
 const productModel = mongoose.model(productCollection, productSchema);

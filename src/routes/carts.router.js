@@ -1,6 +1,8 @@
 import express from "express";
+
 import __dirname from '../utils/utils.js';
 import CartController from "../controllers/cartController.js"
+import { auth, isUser } from "../middlewares/auth.js";
 
 const router = express.Router();
 const cartsRouter = router;
@@ -9,7 +11,7 @@ const CC = new CartController();
 
 router.post("/", async (req, res) => {
     try {
-        const newCart = await CC.createCart();
+        const newCart = await CC.create();
         res.status(200).json(newCart);
     } catch (error) {
         console.error("Error al crear el carrito");
@@ -19,7 +21,7 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
     try {
-        const cart = await CC.getCarts();
+        const cart = await CC.getAll();
 
         if (!cart) {
             console.error("No se pudo encontrar el carrito con ID:", cartId);
@@ -39,7 +41,7 @@ router.get("/:cid", async (req, res) => {
     const cartId = req.params.cid;
 
     try {
-        const cart = await CC.getCartById(cartId);
+        const cart = await CC.getById(cartId);
 
         if (!cart) {
             console.error("No se pudo encontrar el carrito con ID:", cartId);
@@ -63,7 +65,7 @@ router.post("/:cid/product/:pid", async (req, res) => {
 
     
     try {
-        await CC.addProductToCart(cartId, productId, quantity);
+        await CC.addProduct(cartId, productId, quantity);
         res.status(200).send("Producto agregado al carrito");
     } catch (error) {
         console.error("Error al agregar producto al carrito");
@@ -76,7 +78,7 @@ router.delete('/:cid/product/:pid', async (req, res) => {
     const productId = req.params.pid;
     
     try {
-        await CC.removeProductFromCart(cartId, productId);
+        await CC.removeProduct(cartId, productId);
         res.send('Producto eliminado del carrito correctamente');
     } catch (error) {
         console.error("Error al eliminar el producto del carrito:");
@@ -91,7 +93,7 @@ router.put('/:cid/products/:pid', async (req, res) => {
     const { quantity } = req.body;
 
     try {
-        await CC.updateProductQuantity(cartId, productId, quantity);
+        await CC.updateQuantity(cartId, productId, quantity);
         res.send('Cantidad de producto actualizada correctamente');
     } catch (error) {
         console.error("Error al actualizar la cantidad del producto:");
@@ -103,7 +105,7 @@ router.put('/:cid', async (req, res) => {
     const cartId = req.params.cid;
     const { products } = req.body;
     try {
-        await CC.updateCart(cartId, products);
+        await CC.update(cartId, products);
         res.send('Carrito actualizado correctamente');
     } catch (error) {
         console.error("Error al actualizar la cantidad del producto:");
@@ -116,11 +118,22 @@ router.delete('/:cid', async (req, res) => {
     const cartId = req.params.cid;
 
     try {
-        await CC.removeAllProductsFromCart(cartId);
+        await CC.removeAllProducts(cartId);
         res.send('Productos eliminados del carrito correctamente');
     } catch (error) {
         console.error("Error al eliminar los productos del carrito:");
         res.status(500).send('Error al eliminar los productos del carrito', error);
+    }
+});
+
+router.post('/:cid/purchase', auth, isUser, async (req, res) => {
+    try {
+        const cartId = req.params.cid;
+        const userEmail = req.user.email;
+        const result = await CC.purchase(cartId, userEmail);
+        res.json(result);
+    } catch (error) {
+        res.status(500).send(error.message);
     }
 });
 

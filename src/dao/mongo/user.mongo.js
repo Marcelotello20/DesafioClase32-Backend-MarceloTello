@@ -6,7 +6,7 @@ export default class UserService {
         return await userModel.find();
     }
 
-    async getByID(uid) {
+    async getById(uid) {
         const result = await userModel.findOne({_id: uid});
 
         if (!result) throw new Error (`El usuario ${uid} no existe!`);

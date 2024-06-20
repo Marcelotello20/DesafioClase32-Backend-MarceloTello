@@ -1,11 +1,14 @@
 import {Router} from 'express';
 import passport from 'passport';
+
 import UserDTO from '../dao/DTOs/user.dto';
 import auth from '../middlewares/auth';
-
+import UserController from '../controllers/userController';
 
 const router = Router();
 const usersRouter = router;
+
+const UC = new UserController();
 
 router.post("/register", passport.authenticate('register',{failureRedirect:'/failregister'}) ,async (req, res) => {
     res.redirect('/')
@@ -29,9 +32,18 @@ router.get('/githubcallback',passport.authenticate('github',{failureRedirect: '/
     res.redirect('/');
 })
 
-router.get('/current', auth, (req, res) => {
-    const userDTO = new UserDTO(req.user);
-    res.json(userDTO);
-  });
+router.get('/current', auth, async (req, res) => {
+    try {
+        const user = await UC.getByID(req.user._id);
+        if (user) {
+            const userDTO = new UserDTO(user);
+            res.json(userDTO);
+        } else {
+            res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error al obtener el usuario' });
+    }
+});
 
 export default usersRouter;
