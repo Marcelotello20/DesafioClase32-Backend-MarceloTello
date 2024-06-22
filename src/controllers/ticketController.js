@@ -4,7 +4,7 @@ import { TicketsService } from "../repository";
 export default class TicketController {
 
     constructor() {
-        this.ticketService = new TicketsService();
+        this.ticketService = new TicketsService;
     }
 
     async add(ticket) {

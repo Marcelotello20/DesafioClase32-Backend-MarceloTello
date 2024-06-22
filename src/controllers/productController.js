@@ -4,7 +4,7 @@ import { ProductsService } from "../repository";
 export default class ProductController {
 
     constructor() {
-        this.productService = new ProductsService();
+        this.productService = new ProductsService;
     }
 
     async add(product) {

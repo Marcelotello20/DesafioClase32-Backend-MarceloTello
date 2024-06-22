@@ -3,7 +3,7 @@ import { CartsService } from "../repository";
 export default class CartController {
 
     constructor() {
-        this.cartService = new CartsService();
+        this.cartService = CartsService;
     }
 
     async create() {

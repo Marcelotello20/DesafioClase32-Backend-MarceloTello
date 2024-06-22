@@ -3,7 +3,7 @@ import { UsersService } from "../repository";
 export default class UserController {
 
     constructor() {
-        this.userService = new UsersService();
+        this.userService = new UsersService;
     }
 
     async getAll() {

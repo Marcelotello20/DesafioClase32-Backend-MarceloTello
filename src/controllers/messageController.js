@@ -3,7 +3,7 @@ import { MessagesService } from "../repository";
 export default class MessageController {
 
     constructor() {
-        this.messageService = new MessagesService();
+        this.messageService = MessagesService;
     }
 
     async add(user, message) {
