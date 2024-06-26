@@ -1,6 +1,5 @@
 import cartModel from "./models/cartModel.js";
 import productModel from "./models/productModel.js";
-import ticketModel from "./models/ticketModel.js";
 
 export default class CartService {
 
@@ -145,46 +144,5 @@ export default class CartService {
         }
     }
 
-    async purchase(cartId, userEmail) {
-        try {
-            const cart = await this.getById(cartId);
-            if (!cart) {
-                throw new Error('Carrito no encontrado');
-            }
-
-            let totalAmount = 0;
-            let productsNotProcessed = [];
-
-            for (let item of cart.products) {
-                const product = await productModel.findById(item.product._id);
-
-                if (product.stock >= item.quantity) {
-                    product.stock -= item.quantity;
-                    await productModel.updateOne({ _id: product._id }, { stock: product.stock });
-                    totalAmount += product.price * item.quantity;
-                } else {
-                    productsNotProcessed.push(item.product._id);
-                }
-            }
-
-            if (totalAmount > 0) {
-                const ticket = await ticketModel.create({
-                    purchase_datetime: new Date(),
-                    amount: totalAmount,
-                    purchaser: userEmail,
-                });
-
-                cart.products = cart.products.filter(item => productsNotProcessed.includes(item.product._id));
-                await this.update(cartId, cart.products);
-
-                return { ticket, productsNotProcessed };
-            } else {
-                throw new Error('No hay productos disponibles para la compra.');
-            }
-        } catch (error) {
-            console.error('Error al procesar la compra:', error);
-            throw new Error('Error al procesar la compra.');
-        }
-    }
 }
 
