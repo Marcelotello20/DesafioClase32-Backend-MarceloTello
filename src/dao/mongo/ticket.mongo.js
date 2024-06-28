@@ -1,18 +1,18 @@
-import TicketModel from '../models/ticket.model.js';
+import ticketModel from './models/ticketModel.js';
 
 class TicketService {
 
     async add(ticket) {
-        const result = await TicketModel.create(ticket);
+        const result = await ticketModel.create(ticket);
         return result;
     }
 
     async getAll() {
         try {
-            let response = await TicketModel.find().explain('executionStats');
+            let response = await ticketModel.find().explain('executionStats');
             console.log(response)
             
-            return await TicketModel.find().lean();
+            return await ticketModel.find().lean();
         } catch (error) {
             console.error(error.message);
             throw new Error("Error al buscar los productos")
@@ -21,7 +21,7 @@ class TicketService {
 
     async getById(tid) {
         try {
-            const ticket = await TicketModel.findOne({_id: tid});
+            const ticket = await ticketModel.findOne({_id: tid});
 
             if (!ticket) throw new Error(`El ticket ${tid} no existe`)
 
@@ -35,7 +35,7 @@ class TicketService {
 
     async update(tid,update) {
         try{
-            const result = await TicketModel.updateOne({_id: tid}, update);
+            const result = await ticketModel.updateOne({_id: tid}, update);
 
             return result;
         } catch (error) {
@@ -46,7 +46,7 @@ class TicketService {
 
     async delete(tid) {
         try {
-            const result = await TicketModel.deleteOne({_id: tid});
+            const result = await ticketModel.deleteOne({_id: tid});
                    
             console.log("Ticket eliminado correctamente");
             if (result.deletedCount === 0) throw new Error(`El ticket ${tid} no existe`)

@@ -3,6 +3,9 @@ import local from "passport-local"
 import GitHubStrategy from 'passport-github2';
 import userModel from "../dao/mongo/models/userModel.js";
 import { createHash, isValidPassword } from "../utils/functionsUtils.js";
+import EErrors from "../services/errors/EErrors.js";
+import { generateUserErrorInfo } from "../services/errors/info.js";
+import { CustomError } from "../services/errors/CustomError.js";
 
 const localStrategy = local.Strategy;
 
@@ -10,6 +13,7 @@ const initializePassport = () => {
     passport.use('register', new localStrategy(
         {passReqToCallback:true,usernameField:'email'},async (req,username,password,done)=>{
             const {first_name,last_name,email,age} = req.body;
+
             try {
                 let user = await userModel.findOne({email:username});
                 if (user) {

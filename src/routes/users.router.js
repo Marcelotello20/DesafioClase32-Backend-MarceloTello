@@ -1,9 +1,9 @@
 import {Router} from 'express';
 import passport from 'passport';
 
-import UserDTO from '../dao/DTOs/user.dto';
-import auth from '../middlewares/auth';
-import UserController from '../controllers/userController';
+import UserDTO from '../dao/DTOs/user.dto.js';
+import auth from '../middlewares/auth.js';
+import UserController from '../controllers/userController.js';
 
 const router = Router();
 const usersRouter = router;
@@ -42,6 +42,7 @@ router.get('/current', auth, async (req, res) => {
             res.status(404).json({ message: 'Usuario no encontrado' });
         }
     } catch (error) {
+        console.error('Error al obtener el usuario:', error);
         res.status(500).json({ message: 'Error al obtener el usuario' });
     }
 });

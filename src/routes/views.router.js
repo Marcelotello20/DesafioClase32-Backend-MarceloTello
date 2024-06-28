@@ -4,8 +4,11 @@ import __dirname from '../utils/utils.js';
 import ProductController from '../controllers/productController.js';
 import productModel from '../dao/mongo/models/productModel.js';
 import CartController from '../controllers/cartController.js';
+import { generateProduct } from '../utils/utilsmock.js';
+import EErrors from '../services/errors/EErrors.js';
+import { CustomError } from '../services/errors/CustomError.js'
 
-import {auth, logged, isAdmin, isUser} from '../middlewares/auth.js'
+import { auth, logged, isAdmin, isUser } from '../middlewares/auth.js'
 
 const router = express.Router();
 
@@ -82,6 +85,21 @@ router.get('/realtimeproducts', auth, isAdmin, async (req, res) => {
     }
 });
 
+router.get('/mockingproducts', auth, isUser, async (req, res) => {
+    try {
+        const products = Array.from({ length: 100 }, generateProduct);
+        res.status(200).json(products);
+    } catch (error) {
+        console.error("Error al generar productos de prueba", error);
+        const customError = new CustomError({
+            name: 'Error al generar productos de prueba',
+            message: EErrors.UNKNOWN_ERROR.message,
+            statusCode: EErrors.UNKNOWN_ERROR.statusCode
+        });
+        res.status(customError.statusCode).json({ error: customError.message });
+    }
+});
+
 router.get('/addproduct', auth, isAdmin, (req, res) => {
     res.render('addproduct', {
         style: 'index.css'
@@ -100,20 +118,24 @@ router.get('/chat', async (req,res) => {
     });
 })
 
-router.get('/cart/:cid', auth, isUser, async (req,res) => {
+router.get('/cart/:cid', auth, isUser, async (req, res) => {
     let cartId = req.params.cid;
 
-    try{
-        let cart = await CC.getById(cartId)
+    try {
+        let cart = await CC.getById(cartId);
+        if (!cart) {
+            throw createError('CART_NOT_FOUND');
+        }
         res.render('cart', {
             cart,
             style: '../../css/index.css'
         });
     } catch (error) {
-        console.error("Error al obtener el carrito");
-        res.status(500).send('Error al obtener el carrito', error);
+        console.error("Error al obtener el carrito", error);
+        const customError = createError(error.message || 'UNKNOWN_ERROR');
+        res.status(customError.statusCode).json({ error: customError.message });
     }
-})
+});
 
 router.get("/login", logged ,async (req, res) => {
     res.render(

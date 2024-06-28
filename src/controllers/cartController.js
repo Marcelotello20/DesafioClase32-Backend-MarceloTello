@@ -1,4 +1,7 @@
-import { TicketsService, ProductsService, CartsService } from "../repository";
+import { TicketsService, ProductsService, CartsService } from "../repository/index.js";
+import CustomError from "../services/errors/CustomError.js";
+import EErrors from "../services/errors/EErrors.js";
+import { generateCartErrorInfo } from "../services/errors/info.js";
 
 export default class CartController {
 
@@ -9,45 +12,133 @@ export default class CartController {
     }
 
     async create() {
-        return await this.cartService.createCart();
+        try {
+            return await this.cartService.createCart();
+        } catch (error) {
+            throw CustomError.createError({
+                name: "Error al crear carrito",
+                cause: error,
+                message: EErrors.CART_CREATE_FAILED.message,
+                statusCode: EErrors.CART_CREATE_FAILED.statusCode
+            });
+        }
     }
 
     async addProduct(cartId, productId, quantity) {
-        return await this.cartService.addProductToCart(cartId, productId, quantity);
+        try {
+            return await this.cartService.addProductToCart(cartId, productId, quantity);
+        } catch (error) {
+            throw CustomError.createError({
+                name: "Error al añadir producto al carrito",
+                cause: error,
+                message: EErrors.CART_ADD_PRODUCT_FAILED.message,
+                statusCode: EErrors.CART_ADD_PRODUCT_FAILED.statusCode
+            });
+        }
     }
 
     async getAll() {
-        return await this.cartService.getCarts();
+        try {
+            return await this.cartService.getCarts();
+        } catch (error) {
+            throw CustomError.createError({
+                name: "Error al obtener todos los carritos",
+                cause: error,
+                message: EErrors.CART_GET_ALL_FAILED.message,
+                statusCode: EErrors.CART_GET_ALL_FAILED.statusCode
+            });
+        }
     }
 
     async getById(cartId) {
-        return await this.cartService.getCartById(cartId);
+        try {
+            const cart = await this.cartService.getCartById(cartId);
+            if (!cart) {
+                throw CustomError.createError({
+                    name: "Carrito no encontrado",
+                    message: EErrors.CART_NOT_FOUND.message,
+                    statusCode: EErrors.CART_NOT_FOUND.statusCode
+                });
+            }
+            return cart;
+        } catch (error) {
+            throw CustomError.createError({
+                name: "Error al obtener carrito por ID",
+                cause: error,
+                message: EErrors.CART_GET_BY_ID_FAILED.message,
+                statusCode: EErrors.CART_GET_BY_ID_FAILED.statusCode
+            });
+        }
     }
 
     async removeAllProducts(cartId) {
-        return await this.cartService.removeAllProductsToCart(cartId);
+        try {
+            return await this.cartService.removeAllProductsToCart(cartId);
+        } catch (error) {
+            throw CustomError.createError({
+                name: "Error al eliminar todos los productos del carrito",
+                cause: error,
+                message: EErrors.CART_REMOVE_ALL_PRODUCTS_FAILED.message,
+                statusCode: EErrors.CART_REMOVE_ALL_PRODUCTS_FAILED.statusCode
+            });
+        }
     }
 
     async removeProduct(cartId, productId) {
-        return await this.cartService.removeProductToCart(cartId, productId);
+        try {
+            return await this.cartService.removeProductToCart(cartId, productId);
+        } catch (error) {
+            throw CustomError.createError({
+                name: "Error al eliminar producto del carrito",
+                cause: error,
+                message: EErrors.CART_REMOVE_PRODUCT_FAILED.message,
+                statusCode: EErrors.CART_REMOVE_PRODUCT_FAILED.statusCode
+            });
+        }
     }
 
-    async update(cartId,productsData) {
-        if (!productId || !productsData ) {
-            throw new Error('Error al actualizar el carrito, falta información');
+    async update(cartId, productsData) {
+        if (!cartId || !productsData) {
+            throw CustomError.createError({
+                name: "Campos obligatorios faltantes",
+                message: EErrors.MISSING_REQUIRED_FIELDS.message,
+                statusCode: EErrors.MISSING_REQUIRED_FIELDS.statusCode
+            });
         }
-        return await this.cartService.updateCart(cartId,productsData);
+        try {
+            return await this.cartService.updateCart(cartId, productsData);
+        } catch (error) {
+            throw CustomError.createError({
+                name: "Error al actualizar carrito",
+                cause: error,
+                message: EErrors.CART_UPDATE_FAILED.message,
+                statusCode: EErrors.CART_UPDATE_FAILED.statusCode
+            });
+        }
     }
 
     async updateQuantity(cartId, productId, quantity) {
-        return await this.cartService.updateProductQuantity(cartId, productId, quantity);
+        try {
+            return await this.cartService.updateProductQuantity(cartId, productId, quantity);
+        } catch (error) {
+            throw CustomError.createError({
+                name: "Error al actualizar cantidad de producto en carrito",
+                cause: error,
+                message: EErrors.CART_UPDATE_QUANTITY_FAILED.message,
+                statusCode: EErrors.CART_UPDATE_QUANTITY_FAILED.statusCode
+            });
+        }
     }
 
     async purchaseCart(cartId, userEmail) {
         try {
             const cart = await this.cartService.getCartById(cartId);
             if (!cart) {
-                throw new Error('Carrito no encontrado');
+                throw CustomError.createError({
+                    name: "Carrito no encontrado",
+                    message: EErrors.CART_NOT_FOUND.message,
+                    statusCode: EErrors.CART_NOT_FOUND.statusCode
+                });
             }
 
             let totalAmount = 0;
@@ -77,16 +168,33 @@ export default class CartController {
 
                 return { ticket, productsNotProcessed };
             } else {
-                throw new Error('No hay productos disponibles para la compra.');
+                throw CustomError.createError({
+                    name: "No hay productos disponibles para comprar",
+                    message: EErrors.NO_PRODUCTS_AVAILABLE.message,
+                    statusCode: EErrors.NO_PRODUCTS_AVAILABLE.statusCode
+                });
             }
         } catch (error) {
             console.error('Error al procesar la compra:', error);
-            throw new Error('Error al procesar la compra.');
+            throw CustomError.createError({
+                name: "Error al procesar la compra",
+                cause: error,
+                message: EErrors.PURCHASE_CART_FAILED.message,
+                statusCode: EErrors.PURCHASE_CART_FAILED.statusCode
+            });
         }
     }
 
     async delete(cartId) {
-        return await this.cartService.deleteCart(cartId);
+        try {
+            return await this.cartService.deleteCart(cartId);
+        } catch (error) {
+            throw CustomError.createError({
+                name: "Error al eliminar carrito",
+                cause: error,
+                message: EErrors.CART_DELETE_FAILED.message,
+                statusCode: EErrors.CART_DELETE_FAILED.statusCode
+            });
+        }
     }
-
 }

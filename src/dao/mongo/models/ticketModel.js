@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const ticketCollection = "ticket"
 
-const ticketSchema = new mongoose.Schema({
+const ticketSchema = mongoose.Schema({
 
     code: {
         type: String,

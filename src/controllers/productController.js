@@ -1,39 +1,100 @@
-import { ProductsService } from "../repository";
-
+import { ProductsService } from "../repository/index.js";
+import CustomError from "../services/errors/CustomError.js";
+import EErrors from "../services/errors/EErrors.js";
 
 export default class ProductController {
 
     constructor() {
-        this.productService = new ProductsService;
+        this.productService = ProductsService;
     }
 
     async add(product) {
-        const {title, description, code, price, stock, category, thumbnails} = product;
+        const { title, description, code, price, stock, category, thumbnails } = product;
 
         if (!title || !code || !category || !price) {
-            throw new Error('Error al crear el producto');
+            CustomError.createError({
+                name: "Campos requeridos faltantes",
+                message: EErrors.MISSING_REQUIRED_FIELDS.message,
+                statusCode: EErrors.MISSING_REQUIRED_FIELDS.statusCode,
+            });
         }
-        
-        return await this.productService.addProduct({title, description, code, price, stock, category, thumbnails: thumbnails ?? []});
+
+        try {
+            return await this.productService.addProduct({ title, description, code, price, stock, category, thumbnails: thumbnails ?? [] });
+        } catch (error) {
+            throw CustomError.createError({
+                name: "Error al agregar producto",
+                message: EErrors.PRODUCT_ADD_FAILED.message,
+                statusCode: EErrors.PRODUCT_ADD_FAILED.statusCode,
+                cause: error,
+            });
+        }
     }
 
     async getAll() {
-        return await this.productService.getProducts();
+        try {
+            return await this.productService.getProducts();
+        } catch (error) {
+            throw CustomError.createError({
+                name: "Error al obtener todos los productos",
+                message: EErrors.PRODUCT_GET_ALL_FAILED.message,
+                statusCode: EErrors.PRODUCT_GET_ALL_FAILED.statusCode,
+                cause: error,
+            });
+        }
     }
 
     async getByID(productId) {
-        return await this.productService.getProductById(productId);
-    }
-
-    async update(productId,update) {
-        if (!productId || !update ) {
-            throw new Error('Error al actualizar el producto, falta información');
+        try {
+            const product = await this.productService.getProductById(productId);
+            if (!product) {
+                throw CustomError.createError({
+                    name: "Producto no encontrado",
+                    message: EErrors.PRODUCT_NOT_FOUND.message,
+                    statusCode: EErrors.PRODUCT_NOT_FOUND.statusCode,
+                });
+            }
+            return product;
+        } catch (error) {
+            throw CustomError.createError({
+                name: "Error al obtener producto por ID",
+                message: EErrors.PRODUCT_GET_BY_ID_FAILED.message,
+                statusCode: EErrors.PRODUCT_GET_BY_ID_FAILED.statusCode,
+                cause: error,
+            });
         }
-        return await this.productService.updateProduct(productId,update);
-    }
-    
-    async delete(productId) {
-        return await this.productService.deleteProduct(productId);
     }
 
+    async update(productId, update) {
+        if (!productId || !update) {
+            throw CustomError.createError({
+                name: "Campos requeridos faltantes para actualizar",
+                message: EErrors.MISSING_REQUIRED_FIELDS.message,
+                statusCode: EErrors.MISSING_REQUIRED_FIELDS.statusCode,
+            });
+        }
+        try {
+            return await this.productService.updateProduct(productId, update);
+        } catch (error) {
+            throw CustomError.createError({
+                name: "Error al actualizar producto",
+                message: EErrors.PRODUCT_UPDATE_FAILED.message,
+                statusCode: EErrors.PRODUCT_UPDATE_FAILED.statusCode,
+                cause: error,
+            });
+        }
+    }
+
+    async delete(productId) {
+        try {
+            return await this.productService.deleteProduct(productId);
+        } catch (error) {
+            throw CustomError.createError({
+                name: "Error al eliminar producto",
+                message: EErrors.PRODUCT_DELETE_FAILED.message,
+                statusCode: EErrors.PRODUCT_DELETE_FAILED.statusCode,
+                cause: error,
+            });
+        }
+    }
 }

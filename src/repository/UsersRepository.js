@@ -9,7 +9,7 @@ export default class UserRepository {
         return await this.dao.getAll();
     }
 
-    async getUserByID(uid) {
+    async getUserById(uid) {
         return await this.dao.getById(uid);
     }
 
