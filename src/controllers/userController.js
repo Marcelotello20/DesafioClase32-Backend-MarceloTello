@@ -6,7 +6,7 @@ import { generateUserErrorInfo } from "../services/errors/info.js";
 export default class UserController {
 
     constructor() {
-        this.userService = new UsersService;
+        this.userService = UsersService;
     }
 
     async getAll() {

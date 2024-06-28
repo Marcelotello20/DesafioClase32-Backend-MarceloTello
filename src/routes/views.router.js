@@ -4,9 +4,9 @@ import __dirname from '../utils/utils.js';
 import ProductController from '../controllers/productController.js';
 import productModel from '../dao/mongo/models/productModel.js';
 import CartController from '../controllers/cartController.js';
-import { generateProduct } from '../utils/utilsmock.js';
+import { generateProducts } from '../utils/utilsmock.js';
 import EErrors from '../services/errors/EErrors.js';
-import { CustomError } from '../services/errors/CustomError.js'
+import CustomError from '../services/errors/CustomError.js';
 
 import { auth, logged, isAdmin, isUser } from '../middlewares/auth.js'
 import { generateProductErrorInfo } from '../services/errors/info.js';
@@ -88,13 +88,12 @@ router.get('/realtimeproducts', auth, isAdmin, async (req, res) => {
 
 router.get('/mockingproducts', auth, isUser, async (req, res) => {
     try {
-        const products = Array.from({ length: 100 }, generateProduct);
+        const products = generateProducts();
         res.status(200).json(products);
     } catch (error) {
         console.error("Error al generar productos de prueba", error);
-        const customError = new CustomError({
+        const customError = CustomError.createError({
             name: 'Error al generar productos de prueba',
-            cause: generateProductErrorInfo({title, code, category, price}),
             message: EErrors.UNKNOWN_ERROR.message,
             statusCode: EErrors.UNKNOWN_ERROR.statusCode
         });
@@ -102,7 +101,7 @@ router.get('/mockingproducts', auth, isUser, async (req, res) => {
     }
 });
 
-router.get('/addproduct', auth, isAdmin, (req, res) => {
+router.get('/addproduct', auth, isAdmin, async (req, res) => {
     res.render('addproduct', {
         style: 'index.css'
     });

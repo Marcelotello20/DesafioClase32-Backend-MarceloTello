@@ -1,6 +1,7 @@
-import { faker } from "@faker-js/faker";
+import { Faker, es } from '@faker-js/faker';
 
-faker.locale = 'es';
+
+const faker = new Faker({ locale: es });
 
 export const generateProduct = () => {
     return {

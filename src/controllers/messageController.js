@@ -5,7 +5,7 @@ import EErrors from "../services/errors/EErrors.js";
 export default class MessageController {
 
     constructor() {
-        this.messageService = new MessagesService();
+        this.messageService = MessagesService;
     }
 
     async add(user, message) {

@@ -4,7 +4,7 @@ import { createError } from "../utils/errorHandler.js";
 export default class TicketController {
 
     constructor() {
-        this.ticketService = new TicketsService;
+        this.ticketService = TicketsService;
     }
 
     async add(ticket) {

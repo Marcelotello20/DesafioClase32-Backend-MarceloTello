@@ -22,7 +22,7 @@ router.post("/login", passport.authenticate('login',{failureRedirect:'/faillogin
     req.session.user = req.user;
     res.redirect('/')
 });
-router.post("faillogin", async(req,res) => {
+router.post("/faillogin", async(req,res) => {
     console.log("Ingreso erroneo");
     res.send({error:"Failed"})
 })
@@ -34,7 +34,7 @@ router.get('/githubcallback',passport.authenticate('github',{failureRedirect: '/
 
 router.get('/current', auth, async (req, res) => {
     try {
-        const user = await UC.getByID(req.user._id);
+        const user = await UC.getById(req.user._id);
         if (user) {
             const userDTO = new UserDTO(user);
             res.json(userDTO);

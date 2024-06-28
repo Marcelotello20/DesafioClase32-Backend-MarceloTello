@@ -3,9 +3,7 @@ import local from "passport-local"
 import GitHubStrategy from 'passport-github2';
 import userModel from "../dao/mongo/models/userModel.js";
 import { createHash, isValidPassword } from "../utils/functionsUtils.js";
-import EErrors from "../services/errors/EErrors.js";
-import { generateUserErrorInfo } from "../services/errors/info.js";
-import { CustomError } from "../services/errors/CustomError.js";
+
 
 const localStrategy = local.Strategy;
 
