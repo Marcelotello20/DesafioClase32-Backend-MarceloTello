@@ -12,3 +12,12 @@ export const generateCartErrorInfo = (cartInfo) => {
     *ID del producto: ${cartInfo.productId}
     *Cantidad: ${cartInfo.quantity}`;
 }
+
+export const generateProductErrorInfo = (product) => {
+    return `Uno o más campos estaban incompletos o no válidos.
+    Lista de campos requeridos:
+    *title     : debe ser una cadena, recibido ${product.title}
+    *code      : debe ser una cadena, recibido ${product.code}
+    *category  : debe ser una cadena, recibido ${product.category}
+    *price  : debe ser un numero, recibido ${product.price}`;
+}

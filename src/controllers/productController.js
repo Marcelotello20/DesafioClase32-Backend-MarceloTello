@@ -1,6 +1,7 @@
 import { ProductsService } from "../repository/index.js";
 import CustomError from "../services/errors/CustomError.js";
 import EErrors from "../services/errors/EErrors.js";
+import { generateProductErrorInfo } from "../services/errors/info.js";
 
 export default class ProductController {
 
@@ -16,6 +17,7 @@ export default class ProductController {
                 name: "Campos requeridos faltantes",
                 message: EErrors.MISSING_REQUIRED_FIELDS.message,
                 statusCode: EErrors.MISSING_REQUIRED_FIELDS.statusCode,
+                cause: generateProductErrorInfo({title, code, category, price})
             });
         }
 

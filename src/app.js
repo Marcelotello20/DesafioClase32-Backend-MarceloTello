@@ -9,6 +9,7 @@ import __dirname from './utils/utils.js';
 import initializePassport from './config/passport.config.js';
 import config from './config.js'
 import websocket from './websocket.js';
+import errorHandler from './middlewares/errors/index.js'
 
 import {Server} from 'socket.io';
 import mongoose from 'mongoose';
@@ -39,6 +40,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname+'/../public'));
 app.use(cookieParser());
+app.use(errorHandler);
 
 //Session
 app.use(session(

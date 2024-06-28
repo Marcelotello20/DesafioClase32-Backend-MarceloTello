@@ -9,6 +9,7 @@ import EErrors from '../services/errors/EErrors.js';
 import { CustomError } from '../services/errors/CustomError.js'
 
 import { auth, logged, isAdmin, isUser } from '../middlewares/auth.js'
+import { generateProductErrorInfo } from '../services/errors/info.js';
 
 const router = express.Router();
 
@@ -93,6 +94,7 @@ router.get('/mockingproducts', auth, isUser, async (req, res) => {
         console.error("Error al generar productos de prueba", error);
         const customError = new CustomError({
             name: 'Error al generar productos de prueba',
+            cause: generateProductErrorInfo({title, code, category, price}),
             message: EErrors.UNKNOWN_ERROR.message,
             statusCode: EErrors.UNKNOWN_ERROR.statusCode
         });
