@@ -2,7 +2,7 @@ import {Router} from 'express';
 import passport from 'passport';
 
 import UserDTO from '../dao/DTOs/user.dto.js';
-import auth from '../middlewares/auth.js';
+import { auth } from '../middlewares/auth.js';
 import UserController from '../controllers/userController.js';
 
 const router = Router();
@@ -22,7 +22,7 @@ router.post("/login", passport.authenticate('login',{failureRedirect:'/faillogin
     req.session.user = req.user;
     res.redirect('/')
 });
-router.post("/faillogin", async(req,res) => {
+router.get("/faillogin", async(req,res) => {
     console.log("Ingreso erroneo");
     res.send({error:"Failed"})
 })
@@ -34,7 +34,8 @@ router.get('/githubcallback',passport.authenticate('github',{failureRedirect: '/
 
 router.get('/current', auth, async (req, res) => {
     try {
-        const user = await UC.getById(req.user._id);
+        const uid = req.user._id
+        const user = await UC.getById(uid);
         if (user) {
             const userDTO = new UserDTO(user);
             res.json(userDTO);
